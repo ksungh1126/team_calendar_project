@@ -420,4 +420,4 @@ function MainPage() {
   );
 }
 
-export default MainPage;
+export default Mainpage;
