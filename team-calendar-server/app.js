@@ -1,4 +1,5 @@
 // app.js
+require('dotenv').config();
 console.log('🌐 DATABASE_URL:', process.env.DATABASE_URL);
 const express = require('express');
 const cors = require('cors');
@@ -6,7 +7,6 @@ const authRoutes = require('./routes/authRoutes');
 const protectedRoutes = require('./routes/protectedRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 
-require('dotenv').config();
 console.log('✅ DB 연결 정보 확인:', process.env.DB_HOST, process.env.DB_NAME);
 
 const testRoutes = require('./routes/testRoutes');
