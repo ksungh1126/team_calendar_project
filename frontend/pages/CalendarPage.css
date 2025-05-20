@@ -1,0 +1,62 @@
+.calendar-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: #fdfbff;
+}
+
+.task-panel {
+  width: 300px;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+  background: #fff7fc;
+  border-radius: 0 30px 30px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 20px;
+}
+
+.task-list li {
+  background: #fbe4ff;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #4e2e5e;
+}
+
+.input-box {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 12px;
+  background: #f1e8f9;
+  font-size: 14px;
+}
+
+.add-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e2b5f7;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-button:hover {
+  background-color: #d49ae9;
+}
+
+.calendar-panel {
+  flex: 1;
+  padding: 20px;
+  background: #fdfbff;
+}
