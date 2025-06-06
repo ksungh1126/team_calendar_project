@@ -1,79 +1,47 @@
 // RegisterPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+import './RegisterPage.css';
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [profileImg, setProfileImg] = useState(null);
   const navigate = useNavigate();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setProfileImg(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!email || !password || !confirmPassword || !nickname) {
-      alert('모든 항목을 입력해주세요.');
-      return;
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, nickname }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(`회원가입 실패: ${err.message || '오류 발생'}`);
+        return;
+      }
+
+      alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+      navigate('/login');
+    } catch (error) {
+      console.error('회원가입 에러:', error);
+      alert('회원가입 중 오류가 발생했습니다.');
     }
-    if (password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-    localStorage.setItem('user', email);
-    localStorage.setItem(`userInfo_${email}`, JSON.stringify({ nickname, profileImg }));
-    alert('회원가입 성공! 자동 로그인되었습니다.');
-    navigate('/calendar');
   };
 
   return (
-    <div className="login-container">
+    <div className="auth-container">
       <h2>회원가입</h2>
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input-box"
-        />
-        <input
-          type="text"
-          placeholder="닉네임"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          className="input-box"
-        />
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input-box"
-        />
-        <input
-          type="password"
-          placeholder="비밀번호 확인"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="input-box"
-        />
-        <input type="file" accept="image/*" onChange={handleImageChange} className="input-box" />
-        {profileImg && <img src={profileImg} alt="미리보기" style={{ width: '80px', borderRadius: '50%', marginBottom: '10px' }} />}
-        <button type="submit" className="add-button">회원가입</button>
+      <form onSubmit={handleRegister} className="auth-form">
+        <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input type="text" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+        <button type="submit">가입하기</button>
       </form>
-      <p style={{ marginTop: '1rem' }}>
-        이미 계정이 있으신가요? <a href="/login">로그인</a>
-      </p>
     </div>
   );
 }
