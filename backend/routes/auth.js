@@ -1,3 +1,5 @@
+// backend/routes/auth.js
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -79,7 +81,7 @@ router.post('/login', async (req, res) => {
       token,
       userInfo: {
         nickname: user.nickname,
-        profileImg: user.profileImg
+        profileImg: user.profileImg || null // 프론트 요구사항에 맞춰 null fallback 추가
       }
     });
   } catch (err) {
