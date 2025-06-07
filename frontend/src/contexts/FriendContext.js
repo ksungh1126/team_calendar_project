@@ -7,7 +7,7 @@ export const useFriend = () => useContext(FriendContext);
 
 export const FriendProvider = ({ children }) => {
   const [friends, setFriends] = useState([]);
-  const savedTeamId = localStorage.getItem('teamId') || 'testTeam';
+  const teamId = localStorage.getItem('teamId') || 'testTeam';
 
   useEffect(() => {
     const fetchMembers = async () => {

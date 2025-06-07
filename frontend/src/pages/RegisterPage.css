@@ -1,11 +1,11 @@
-/* src/pages/LoginPage.css */
+/* src/pages/RegisterPage.css */
 
-.login-container {
+.register-container {
   max-width: 400px;
   margin: 5rem auto;
   padding: 2rem;
   border-radius: 16px;
-  background-color: #e6f7f4; /* 파스텔 민트 */
+  background-color: #f3e8fd; /* 연보라 배경 */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
 }
 
@@ -15,14 +15,14 @@
   margin-bottom: 14px;
   font-size: 1rem;
   border-radius: 8px;
-  border: 1px solid #cde3df;
+  border: 1px solid #dacaf1;
   background-color: #ffffff;
 }
 
 .add-button {
   width: 100%;
   padding: 12px;
-  background-color: #a2ded0; /* 연한 민트 */
+  background-color: #c6a5e8; /* 파스텔 보라 */
   color: white;
   border: none;
   border-radius: 8px;
@@ -32,18 +32,18 @@
 }
 
 .add-button:hover {
-  background-color: #88cfc0;
+  background-color: #b58edb;
 }
 
 .auth-link {
   text-align: center;
   margin-top: 1rem;
-  color: #4d7770;
+  color: #5f4c7a;
   font-size: 0.95rem;
 }
 
 .auth-link a {
-  color: #4a9c8c;
+  color: #7b5fa5;
   text-decoration: none;
   font-weight: 600;
 }

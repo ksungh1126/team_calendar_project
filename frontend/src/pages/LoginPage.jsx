@@ -1,6 +1,6 @@
-// LoginPage.jsx
+// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -25,7 +25,7 @@ function LoginPage() {
       }
 
       const data = await res.json();
-      localStorage.setItem('user', data.email);  // 또는 data.token 등
+      localStorage.setItem('user', data.email);
       localStorage.setItem(`userInfo_${data.email}`, JSON.stringify({
         nickname: data.nickname,
         profileImg: data.profileImg || null,
@@ -40,13 +40,30 @@ function LoginPage() {
   };
 
   return (
-    <div className="auth-container">
-      <h2>로그인</h2>
-      <form onSubmit={handleLogin} className="auth-form">
-        <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">로그인</button>
+    <div className="login-container">
+      <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>로그인</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          className="input-box"
+          placeholder="이메일"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          className="input-box"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" className="add-button">로그인</button>
       </form>
+      <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+        아직 회원이 아니신가요? <Link to="/register">회원가입</Link>
+      </p>
     </div>
   );
 }
