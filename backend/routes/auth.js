@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../db'); // db 연결 파일 import
+const sequelize = require('../config/db-pool'); // 바뀐 부분! db 대신 sequelize 사용
 require('dotenv').config();
 
 // 회원가입 API
@@ -12,13 +12,14 @@ router.post('/register', async (req, res) => {
   const { email, password, username } = req.body;
 
   try {
-    // 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 사용자 정보 DB에 저장
-    await db.execute(
+    await sequelize.query(
       'INSERT INTO users (email, password, nickname, profileImg) VALUES (?, ?, ?, ?)',
-      [email, hashedPassword, username, null]
+      {
+        replacements: [email, hashedPassword, username, null],
+        type: sequelize.QueryTypes.INSERT
+      }
     );
 
     return res.json({
@@ -43,23 +44,22 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 사용자 조회
-    const [rows] = await db.execute(
+    const [users] = await sequelize.query(
       'SELECT * FROM users WHERE email = ?',
-      [email]
+      {
+        replacements: [email],
+        type: sequelize.QueryTypes.SELECT
+      }
     );
 
-    if (rows.length === 0) {
+    if (!users) {
       return res.status(401).json({
         success: false,
         message: '이메일 또는 비밀번호가 올바르지 않습니다.'
       });
     }
 
-    const user = rows[0];
-
-    // 비밀번호 검증
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, users.password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -68,9 +68,8 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // JWT 토큰 발급
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: users.id, email: users.email },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -80,8 +79,8 @@ router.post('/login', async (req, res) => {
       message: '로그인 성공',
       token,
       userInfo: {
-        nickname: user.nickname,
-        profileImg: user.profileImg || null // 프론트 요구사항에 맞춰 null fallback 추가
+        nickname: users.nickname,
+        profileImg: users.profileImg || null
       }
     });
   } catch (err) {
