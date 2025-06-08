@@ -1,98 +1,127 @@
-const Event = require('../models/Event');
-const User = require('../models/User');
+const { Event, User } = require('../models');
 
 // 이벤트 생성
 exports.createEvent = async (req, res) => {
   try {
-    const event = new Event({
-      ...req.body,
-      owner: req.user.userId,  // auth 미들웨어에서 설정한 userId 사용
+    const { title, start, end, description, color } = req.body;
+    const userId = req.user.userId; // JWT에서 추출한 사용자 ID
+
+    const event = await Event.create({
+      title,
+      start,
+      end,
+      description,
+      color,
+      userId
     });
-    await event.save();
-    res.status(201).json(event);
+
+    return res.status(201).json({
+      success: true,
+      message: '이벤트가 생성되었습니다.',
+      event
+    });
   } catch (err) {
-    res.status(500).json({ message: '이벤트 생성 실패', error: err.message });
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: '이벤트 생성에 실패했습니다.'
+    });
   }
 };
 
-// 본인 이벤트 전체 조회
+// 이벤트 목록 조회
 exports.getEvents = async (req, res) => {
   try {
-    const events = await Event.find({ owner: req.user.userId });
-    res.status(200).json(events);
+    const userId = req.user.userId;
+    const events = await Event.findAll({
+      where: { userId },
+      include: [{
+        model: User,
+        attributes: ['nickname', 'profileImg']
+      }]
+    });
+
+    return res.json({
+      success: true,
+      events
+    });
   } catch (err) {
-    res.status(500).json({ message: '이벤트 조회 실패', error: err.message });
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: '이벤트 조회에 실패했습니다.'
+    });
+  }
+};
+
+// 이벤트 수정
+exports.updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, start, end, description, color } = req.body;
+    const userId = req.user.userId;
+
+    const event = await Event.findOne({
+      where: { id, userId }
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: '이벤트를 찾을 수 없습니다.'
+      });
+    }
+
+    await event.update({
+      title,
+      start,
+      end,
+      description,
+      color
+    });
+
+    return res.json({
+      success: true,
+      message: '이벤트가 수정되었습니다.',
+      event
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: '이벤트 수정에 실패했습니다.'
+    });
   }
 };
 
 // 이벤트 삭제
 exports.deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findOneAndDelete({ _id: req.params.id, owner: req.user.userId });
-    if (!event) {
-      return res.status(404).json({ message: '이벤트를 찾을 수 없습니다.' });
-    }
-    res.status(200).json({ message: '이벤트가 삭제되었습니다.' });
-  } catch (err) {
-    res.status(500).json({ message: '이벤트 삭제 실패', error: err.message });
-  }
-};
+    const { id } = req.params;
+    const userId = req.user.userId;
 
-// 공유된 이벤트 조회
-exports.getSharedEvents = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
-    const friends = user.friends || [];
-    const allOwners = [user.email, ...friends];
-    const events = await Event.find({ owner: { $in: allOwners } });
-    res.status(200).json(events);
-  } catch (err) {
-    res.status(500).json({ message: '일정 조회 실패', error: err.message });
-  }
-};
-
-// 공강 시간 계산
-exports.calculateSharedFreeTime = async (req, res) => {
-  try {
-    const { friends } = req.body;
-    const user = await User.findById(req.user.userId);
-    const allOwners = [user.email, ...friends];
-    const events = await Event.find({ owner: { $in: allOwners } });
-    const blocks = generateWeeklyTimeBlocks();
-    const occupied = new Set();
-
-    for (const event of events) {
-      const start = new Date(event.start);
-      const end = new Date(event.end);
-      const day = start.toLocaleDateString('en-US', { weekday: 'short' });
-      const startHour = start.getHours();
-      const endHour = end.getHours();
-      for (let h = startHour; h < endHour; h++) {
-        const key = `${day}_${h}_${event.owner}`;
-        occupied.add(key);
-      }
-    }
-
-    const sharedFree = blocks.filter(({ day, start }) => {
-      return allOwners.every((person) => {
-        const key = `${day}_${start}_${person}`;
-        return !occupied.has(key);
-      });
+    const event = await Event.findOne({
+      where: { id, userId }
     });
 
-    res.status(200).json(sharedFree);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: '이벤트를 찾을 수 없습니다.'
+      });
+    }
+
+    await event.destroy();
+
+    return res.json({
+      success: true,
+      message: '이벤트가 삭제되었습니다.'
+    });
   } catch (err) {
-    res.status(500).json({ message: '공강 시간 계산 실패', error: err.message });
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: '이벤트 삭제에 실패했습니다.'
+    });
   }
 };
-
-function generateWeeklyTimeBlocks() {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const blocks = [];
-  for (const day of days) {
-    for (let hour = 8; hour < 21; hour++) {
-      blocks.push({ day, start: hour, end: hour + 1 });
-    }
-  }
-  return blocks;
-}

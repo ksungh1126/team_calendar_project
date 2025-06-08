@@ -6,6 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { mergeEventsWithOverlapColor, calculateSharedFreeTime, convertFreeBlocksToEvents } from '../utils/calendarUtils';
 import { useFriend } from '../contexts/FriendContext';
+import { eventService, teamService } from '../services/api';
 import './CalendarPage.css';
 
 function CalendarPage() {
@@ -43,8 +44,7 @@ function CalendarPage() {
 
     const fetchSchedules = async () => {
       try {
-        const res = await fetch('/api/schedules');
-        const data = await res.json();
+        const data = await eventService.getEvents();
         const merged = mergeEventsWithOverlapColor(data);
         setEvents(merged);
       } catch (err) {
@@ -56,9 +56,7 @@ function CalendarPage() {
       const teamId = localStorage.getItem('teamId');
       if (!teamId) return;
       try {
-        const res = await fetch(`/api/teams/${teamId}`);
-        if (!res.ok) throw new Error('팀 정보 없음');
-        const data = await res.json();
+        const data = await teamService.getTeam(teamId);
         setTeamInfo(data);
       } catch (err) {
         console.error('팀 정보 불러오기 실패:', err);
@@ -153,22 +151,12 @@ function CalendarPage() {
   const handleCreateTeam = async () => {
     if (!teamName.trim()) return;
     try {
-      const res = await fetch('/api/teams', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: teamName }),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(`팀 생성 실패: ${err.message || '오류 발생'}`);
-        return;
-      }
-      const team = await res.json();
+      const team = await teamService.createTeam({ name: teamName });
       localStorage.setItem('teamId', team.id);
       alert(`팀 \"${team.name}\" 생성 완료!`);
       window.location.reload();
     } catch (err) {
-      console.error('팀 생성 실패:', err);
+      alert(`팀 생성 실패: ${err.message || '오류 발생'}`);
     }
   };
 
@@ -181,19 +169,12 @@ function CalendarPage() {
     const confirmDelete = window.confirm('정말 이 팀을 삭제하시겠습니까? 모든 팀원 정보가 사라질 수 있습니다!');
     if (!confirmDelete) return;
     try {
-      const res = await fetch(`/api/teams/${teamId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(`팀 삭제 실패: ${err.message || '오류 발생'}`);
-        return;
-      }
+      await teamService.deleteTeam(teamId);
       localStorage.removeItem('teamId');
       alert('팀이 삭제되었습니다.');
       window.location.reload();
     } catch (err) {
-      console.error('팀 삭제 실패:', err);
+      alert(`팀 삭제 실패: ${err.message || '오류 발생'}`);
     }
   };
 

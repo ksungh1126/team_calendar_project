@@ -1,31 +1,31 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const User = sequelize.define('User', {
+  const TeamMember = sequelize.define('TeamMember', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    email: {
-      type: DataTypes.STRING,
+    teamId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
+      references: {
+        model: 'teams',
+        key: 'id'
       }
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
-    nickname: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    profileImg: {
-      type: DataTypes.STRING,
-      allowNull: true
+    role: {
+      type: DataTypes.ENUM('admin', 'member'),
+      defaultValue: 'member'
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -38,9 +38,9 @@ module.exports = (sequelize) => {
       defaultValue: DataTypes.NOW
     }
   }, {
-    tableName: 'users',
+    tableName: 'team_members',
     timestamps: true
   });
 
-  return User;
+  return TeamMember;
 }; 

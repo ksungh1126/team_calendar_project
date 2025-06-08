@@ -1,27 +1,28 @@
-// index.js
+const app = require('./app');
+const db = require('./models');
 
-console.log("▶ index.js가 로드되었습니다!");
-
-const express = require("express");
-const cors = require("cors");
-const authRouter = require("./routes/auth");
-
-console.log("▶ authRouter:", authRouter);
-console.log("▶ typeof authRouter:", typeof authRouter);
-
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 미들웨어 설정
-app.use(cors());
-app.use(express.json()); // JSON 요청 body 파싱
-
-// 라우터 연결
-console.log("▶ authRouter is:", authRouter);
-console.log("▶ typeof authRouter:", typeof authRouter);
-app.use("/api", authRouter); // → /api/register, /api/login 등
+const initializeDatabase = async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log('✅ 데이터베이스 연결 성공');
+    
+    // 개발 환경에서만 테이블 동기화
+    if (process.env.NODE_ENV === 'development') {
+      await db.sequelize.sync({ alter: true });
+      console.log('✅ 데이터베이스 테이블 동기화 완료');
+    }
+  } catch (error) {
+    console.error('❌ 데이터베이스 연결 실패:', error);
+    process.exit(1);
+  }
+};
 
 // 서버 시작
 app.listen(PORT, () => {
-  console.log(`✅ 서버 실행 중: http://localhost:${PORT}`);
+  console.log(`🚀 서버가 http://localhost:${PORT} 에서 실행 중입니다!`);
 });
+
+// 데이터베이스 초기화
+initializeDatabase(); 

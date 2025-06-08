@@ -1,31 +1,32 @@
 // app.js
 const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
 const app = express();
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
 
-dotenv.config();
-connectDB();
-
+// 미들웨어 설정
+app.use(cors());
 app.use(express.json());
 
-// ✅ 라우터 모듈 불러오기
-const authRoutes = require('./routes/auth');
-const eventRoutes = require('./routes/events');
-const userRoutes = require('./routes/users');
-
-// ✅ 라우터 등록
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/users', userRoutes);
+// 라우터 연결
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/teams', require('./routes/teamRoutes'));
+app.use('/api/friends', require('./routes/friendRoutes'));
 
 // 기본 루트 라우터
 app.get('/', (req, res) => {
   res.send('📅 공유 캘린더 API 서버가 실행 중입니다!');
 });
 
-// ✅ 포트 설정 및 서버 실행
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ 서버 실행 중: http://localhost:${PORT}`);
+// 에러 핸들링 미들웨어
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: '서버 에러가 발생했습니다.'
+  });
 });
+
+module.exports = app;

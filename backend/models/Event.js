@@ -1,16 +1,54 @@
-// models/Event.js
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const eventSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  title: { type: String, required: true },
-  description: String,
-  date: { type: Date, required: true },
-  createdAt: { type: Date, default: Date.now },
-});
+module.exports = (sequelize) => {
+  const Event = sequelize.define('Event', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    start: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    end: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    tableName: 'events',
+    timestamps: true
+  });
 
-module.exports = mongoose.model('Event', eventSchema);
+  return Event;
+}; 
