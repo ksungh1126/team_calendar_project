@@ -8,6 +8,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from 'react-router-dom';
 
 const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
+  const handleNavigationClick = (targetPage) => {
+    console.log(`${targetPage} 페이지로 이동합니다.`);
+  };
+
   return (
     <AppBar position="static" sx={{ backgroundColor: '#1976d2', color: '#fff' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -17,37 +21,37 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
         </Typography>
         {/* 우측: 여섯 개의 버튼 */}
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <IconButton color="inherit" component={Link} to="/main">
+          <IconButton color="inherit" component={Link} to="/main" onClick={() => handleNavigationClick('메인')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <HomeIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>메인</Typography>
             </Box>
           </IconButton>
-          <IconButton color="inherit" component={Link} to="/team">
+          <IconButton color="inherit" component={Link} to="/team" onClick={() => handleNavigationClick('팀')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <GroupsIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>팀</Typography>
             </Box>
           </IconButton>
-          <IconButton color="inherit" component={Link} to="/friends">
+          <IconButton color="inherit" component={Link} to="/friends" onClick={() => handleNavigationClick('친구')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <PersonAddIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>친구</Typography>
             </Box>
           </IconButton>
-          <IconButton color="inherit" component={Link} to="/schooltime">
+          <IconButton color="inherit" component={Link} to="/schooltime" onClick={() => handleNavigationClick('시간표')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <SchoolIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>시간표</Typography>
             </Box>
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={() => handleNavigationClick('알림')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <NotificationsIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>알림</Typography>
             </Box>
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={() => handleNavigationClick('설정')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <SettingsIcon />
               <Typography variant="caption" sx={{ color: '#fff' }}>설정</Typography>
