@@ -6,7 +6,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: 'mysql',
+    dialect: 'postgres',
     logging: false,
     pool: {
       max: 10,
@@ -15,8 +15,8 @@ module.exports = {
       idle: 10000
     },
     define: {
-      charset: 'utf8mb4',
-      collate: 'utf8mb4_unicode_ci',
+      charset: 'utf8',
+      collate: 'utf8_general_ci',
       timestamps: true
     }
   },
@@ -25,7 +25,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: 'mysql',
+    dialect: 'postgres',
     logging: false,
     pool: {
       max: 10,
@@ -34,17 +34,14 @@ module.exports = {
       idle: 10000
     },
     define: {
-      charset: 'utf8mb4',
-      collate: 'utf8mb4_unicode_ci',
+      charset: 'utf8',
+      collate: 'utf8_general_ci',
       timestamps: true
     }
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    dialect: 'mysql',
+    use_env_variable: 'DATABASE_URL',
+    dialect: 'postgres',
     logging: false,
     pool: {
       max: 10,
@@ -52,9 +49,15 @@ module.exports = {
       acquire: 30000,
       idle: 10000
     },
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
     define: {
-      charset: 'utf8mb4',
-      collate: 'utf8mb4_unicode_ci',
+      charset: 'utf8',
+      collate: 'utf8_general_ci',
       timestamps: true
     }
   }
