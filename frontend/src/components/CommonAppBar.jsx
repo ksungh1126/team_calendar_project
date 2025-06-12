@@ -13,7 +13,7 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#1976d2', color: '#fff' }}>
+    <AppBar position="static" sx={{ backgroundColor: '#22C0B8', color: '#fff' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* 좌측: 사용자 문구 */}
         <Typography variant="h6" component="div">

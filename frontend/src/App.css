@@ -1,49 +1,88 @@
-/* 전역 스타일 */
+/* ===== 기본 전역 스타일 ===== */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background-color: #fafafa;
 }
 
+/* ===== 앱 루트 ===== */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ===== 상단 AppBar 스타일 (Optional - override 할 수 있음) ===== */
+.MuiAppBar-root {
+  background-color: #f6e049 !important; /* TEAM의 N 색 */
+  color: #000;
+  font-weight: bold;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ===== 캘린더 프레임 ===== */
+.calendar-wrapper {
+  border: 5px solid #000;
+  border-radius: 30px;
+  padding: 30px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* ===== FullCalendar 수정 (모서리 둥글게 등) ===== */
+.fc {
+  border-radius: 20px;
+  overflow: hidden;
 }
 
-.card {
-  padding: 2em;
+.fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #444;
 }
 
-.read-the-docs {
-  color: #888;
+.calendar-wrapper {
+  border: 4px solid black;
+  border-radius: 20px;
+  padding: 20px;
+  background-color: white;
+}
+
+.fc-daygrid-day-frame {
+  border-radius: 10px !important;
+  overflow: hidden;
+  transition: background-color 0.2s ease;
+}
+
+.fc-day-today {
+  background-color: #fff8d6 !important;
+  border: 2px solid #f6e049 !important;
+}
+
+.fc-button {
+  border-radius: 10px !important;
+  background-color: #f6e049 !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.fc-button:hover {
+  background-color: #e5d838 !important;
+}
+
+/* ===== 일정 추가 버튼 (추가적으로 스타일링한 경우) ===== */
+.add-event-button {
+  background-color: #f6e049;
+  color: black;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.add-event-button:hover {
+  background-color: #e5d838;
 }

@@ -57,7 +57,7 @@ const LoginPage = () => {
       >
       <Box sx={{ mb: 2 }}>
     <img
-      src="/team_calendar_logo.png"
+      src="/team_calendar_logo.jpg"
       alt="Team Calendar"
       style={{ width: '200px', objectFit: 'contain' }}
     />

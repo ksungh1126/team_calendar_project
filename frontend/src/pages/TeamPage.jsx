@@ -1,8 +1,16 @@
-import { Box, Typography, Card, Button, Chip, List, ListItem, ListItemText } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Card,
+  Button,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import CommonAppBar from '../components/CommonAppBar';
 
-// 임시 팀 데이터
 const teams = [
   {
     id: 1,
@@ -57,10 +65,31 @@ const TeamPage = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <CommonAppBar userName={user?.name || 'user'} pageName="팀페이지" />
-      <Box sx={{ flex: 1, py: 5, px: 5, bgcolor: '#fff', overflowY: 'auto' }}>
+
+      {/* ✅ 팀 생성하기 버튼 */}
+      <Box sx={{ px: 5, pt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+  <Button
+    variant="contained"
+    sx={{
+      backgroundColor: '#A0E7E5',
+      color: '#333',
+      fontWeight: 'bold',
+      borderRadius: '12px',
+      '&:hover': {
+        backgroundColor: '#90d9d6',
+      },
+    }}
+  >
+    팀 생성하기
+  </Button>
+</Box>
+
+
+      <Box sx={{ flex: 1, py: 4, px: 5, bgcolor: '#fff', overflowY: 'auto' }}>
         <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
           나의 팀 목록
         </Typography>
+
         <Box
           sx={{
             display: 'grid',
@@ -69,17 +98,50 @@ const TeamPage = () => {
           }}
         >
           {teams.map((team) => (
-            <Card key={team.id} sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 2, boxSizing: 'border-box' }}>
+            <Card
+              key={team.id}
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                p: 2,
+                boxSizing: 'border-box',
+                border: '2px solid black',
+                borderRadius: '16px',
+              }}
+            >
               {/* 1. 팀 이름 + 새일정 + 인원수 */}
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mb: 1,
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{team.name}</Typography>
-                  {team.hasNewEvent && <Chip label="새 일정" color="primary" size="small" />}
+                  <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                    {team.name}
+                  </Typography>
+                  {team.hasNewEvent && (
+                    <Chip label="새 일정" color="primary" size="small" />
+                  )}
                 </Box>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>인원 {team.members}명</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  인원 {team.members}명
+                </Typography>
               </Box>
+
               {/* 2. 팀장 정보 */}
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2, mt: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  mb: 2,
+                  mt: 1,
+                }}
+              >
                 <Box
                   sx={{
                     width: '20%',
@@ -94,19 +156,49 @@ const TeamPage = () => {
                 />
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>팀장 </Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{team.leader.name}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}
+                    >
+                      팀장{' '}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}
+                    >
+                      {team.leader.name}
+                    </Typography>
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>{team.leader.email}</Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontSize: '1rem' }}
+                  >
+                    {team.leader.email}
+                  </Typography>
                 </Box>
               </Box>
-              {/* 3. 최근 일정 2개 */}
+
+              {/* 3. 최근 일정 */}
               <Box sx={{ flex: 1, mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>최근 일정</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 'bold', mb: 0.5 }}
+                >
+                  최근 일정
+                </Typography>
                 <List dense disablePadding sx={{ mt: 0, mb: 0 }}>
                   {team.events.slice(0, 2).map((event) => (
-                    <ListItem key={event.id} sx={{ pl: 0, py: 0.2, minHeight: '28px' }}>
-                      <ListItemText primary={event.title} secondary={event.date} primaryTypographyProps={{ fontSize: '0.98rem' }} secondaryTypographyProps={{ fontSize: '0.85rem' }} />
+                    <ListItem
+                      key={event.id}
+                      sx={{ pl: 0, py: 0.2, minHeight: '28px' }}
+                    >
+                      <ListItemText
+                        primary={event.title}
+                        secondary={event.date}
+                        primaryTypographyProps={{ fontSize: '0.98rem' }}
+                        secondaryTypographyProps={{ fontSize: '0.85rem' }}
+                      />
                     </ListItem>
                   ))}
                   {team.events.length === 0 && (
@@ -116,8 +208,22 @@ const TeamPage = () => {
                   )}
                 </List>
               </Box>
+
               {/* 4. 팀스페이스 접속 버튼 */}
-              <Button variant="contained" color="primary" fullWidth sx={{ mt: 'auto' }}>
+              <Button
+                variant="contained"
+                fullWidth
+                sx={{
+                  mt: 'auto',
+                  backgroundColor: '#A0E7E5',
+                  color: '#333',
+                  fontWeight: 'bold',
+                  borderRadius: '12px',
+                  '&:hover': {
+                    backgroundColor: '#90d9d6',
+                  },
+                }}
+              >
                 팀스페이스 접속
               </Button>
             </Card>
@@ -128,4 +234,4 @@ const TeamPage = () => {
   );
 };
 
-export default TeamPage; 
+export default TeamPage;
