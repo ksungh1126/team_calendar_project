@@ -23,11 +23,12 @@ const db = {
 // 모델 정의
 db.User = require('./User')(sequelize);
 db.Subject = require('./Subject')(sequelize);
+
 db.Team = require('./Team')(sequelize);
 db.TeamMember = require('./TeamMember')(sequelize);
 db.Friend = require('./Friend')(sequelize);
 db.Event = require('./Event')(sequelize);
-
+db.Friend = require('./friend')(sequelize, Sequelize.DataTypes);
 // 관계 정의
 // User - Subject (1:N)
 db.User.hasMany(db.Subject, { foreignKey: 'userId' });

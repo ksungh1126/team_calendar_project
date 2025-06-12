@@ -1,134 +1,124 @@
-const { User, Friend } = require('../models');
-const { Op } = require('sequelize');
+const { Friend } = require('../models');
 
 // 친구 요청 보내기
-exports.sendRequest = async (req, res) => {
+exports.sendFriendRequest = async (req, res) => {
   try {
-    const { friendId } = req.body;
-    if (req.user.id === friendId) {
-      return res.status(400).json({ error: '자기 자신에게 친구 요청을 보낼 수 없습니다.' });
-    }
-    // 이미 친구이거나 요청이 있는지 확인
-    const exists = await Friend.findOne({
-      where: {
-        [Op.or]: [
-          { userId: req.user.id, friendId },
-          { userId: friendId, friendId: req.user.id }
-        ]
-      }
+    const userId = req.user.id;  // 로그인한 사용자
+    const { friend_id } = req.body;
+
+    // 이미 친구 요청 보냈는지 확인
+    const existing = await Friend.findOne({
+      where: { user_id: userId, friend_id },
     });
-    if (exists) {
-      return res.status(400).json({ error: '이미 친구이거나 요청이 존재합니다.' });
+
+    if (existing) {
+      return res.status(400).json({ message: '이미 친구 요청을 보냈습니다.' });
     }
-    // 요청 생성
-    await Friend.create({ userId: req.user.id, friendId, status: 'pending' });
+
+    await Friend.create({
+      user_id: userId,
+      friend_id,
+      status: 'pending',
+    });
+
     res.json({ message: '친구 요청을 보냈습니다.' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// 친구 요청 수락
-exports.acceptRequest = async (req, res) => {
-  try {
-    const { requestId } = req.body;
-    const request = await Friend.findOne({ where: { id: requestId, friendId: req.user.id, status: 'pending' } });
-    if (!request) {
-      return res.status(404).json({ error: '요청을 찾을 수 없습니다.' });
-    }
-    request.status = 'accepted';
-    await request.save();
-    res.json({ message: '친구 요청을 수락했습니다.' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// 친구 요청 거절
-exports.rejectRequest = async (req, res) => {
-  try {
-    const { requestId } = req.body;
-    const request = await Friend.findOne({ where: { id: requestId, friendId: req.user.id, status: 'pending' } });
-    if (!request) {
-      return res.status(404).json({ error: '요청을 찾을 수 없습니다.' });
-    }
-    request.status = 'rejected';
-    await request.save();
-    res.json({ message: '친구 요청을 거절했습니다.' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// 친구 삭제
-exports.deleteFriend = async (req, res) => {
-  try {
-    const { friendId } = req.body;
-    const deleted = await Friend.destroy({
-      where: {
-        status: 'accepted',
-        [Op.or]: [
-          { userId: req.user.id, friendId },
-          { userId: friendId, friendId: req.user.id }
-        ]
-      }
-    });
-    if (!deleted) {
-      return res.status(404).json({ error: '친구 관계를 찾을 수 없습니다.' });
-    }
-    res.json({ message: '친구를 삭제했습니다.' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 에러' });
   }
 };
 
 // 친구 목록 조회
 exports.getFriends = async (req, res) => {
   try {
-    // accepted 상태의 친구만 조회
+    const userId = req.user.id;
+
     const friends = await Friend.findAll({
       where: {
+        user_id: userId,
         status: 'accepted',
-        [Op.or]: [
-          { userId: req.user.id },
-          { friendId: req.user.id }
-        ]
-      }
+      },
     });
-    // 친구 정보 가져오기
-    const friendIds = friends.map(f => (f.userId === req.user.id ? f.friendId : f.userId));
-    const users = await User.findAll({ 
-      where: { id: friendIds },
-      attributes: { exclude: ['password'] }  // password 필드 제외
-    });
-    res.json({ friends: users });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    res.json(friends);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 에러' });
   }
 };
 
-// 받은 친구 요청 목록
-exports.getReceivedRequests = async (req, res) => {
+// 친구 요청 목록 조회
+exports.getFriendRequests = async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const requests = await Friend.findAll({
-      where: { friendId: req.user.id, status: 'pending' },
-      include: [{ model: User, as: 'requester', attributes: ['id', 'email', 'name'] }]
+      where: {
+        friend_id: userId,
+        status: 'pending',
+      },
     });
-    res.json({ requests });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    res.json(requests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 에러' });
   }
 };
 
-// 보낸 친구 요청 목록
-exports.getSentRequests = async (req, res) => {
+// 친구 요청 수락/거절
+exports.respondFriendRequest = async (req, res) => {
   try {
-    const requests = await Friend.findAll({
-      where: { userId: req.user.id, status: 'pending' },
-      include: [{ model: User, as: 'receiver', attributes: ['id', 'email', 'name'] }]
+    const userId = req.user.id;
+    const requestId = req.params.id;
+    const { status } = req.body;
+
+    const request = await Friend.findOne({
+      where: {
+        id: requestId,
+        friend_id: userId,
+        status: 'pending',
+      },
     });
-    res.json({ requests });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    if (!request) {
+      return res.status(404).json({ message: '요청을 찾을 수 없습니다.' });
+    }
+
+    await request.update({ status });
+
+    res.json({ message: `친구 요청을 ${status} 처리했습니다.` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 에러' });
   }
-}; 
+};
+
+// 친구 삭제
+exports.deleteFriend = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const friendId = req.params.id;
+
+    await Friend.destroy({
+      where: {
+        user_id: userId,
+        friend_id: friendId,
+        status: 'accepted',
+      },
+    });
+
+    await Friend.destroy({
+      where: {
+        user_id: friendId,
+        friend_id: userId,
+        status: 'accepted',
+      },
+    });
+
+    res.json({ message: '친구를 삭제했습니다.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 에러' });
+  }
+};
