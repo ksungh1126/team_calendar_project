@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import CommonAppBar from '../components/CommonAppBar';
+import { useNavigate } from 'react-router-dom';
 
 const teams = [
   {
@@ -25,7 +26,6 @@ const teams = [
     events: [
       { id: 1, title: 'A팀 회의', date: '2024-06-12' },
       { id: 2, title: 'A팀 워크샵', date: '2024-06-10' },
-      { id: 3, title: 'A팀 회식', date: '2024-06-08' },
     ],
   },
   {
@@ -61,6 +61,7 @@ const teams = [
 
 const TeamPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -68,23 +69,23 @@ const TeamPage = () => {
 
       {/* ✅ 팀 생성하기 버튼 */}
       <Box sx={{ px: 5, pt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-  <Button
-    variant="contained"
-    sx={{
-      backgroundColor: '#A0E7E5',
-      color: '#333',
-      fontWeight: 'bold',
-      borderRadius: '12px',
-      '&:hover': {
-        backgroundColor: '#90d9d6',
-      },
-    }}
-  >
-    팀 생성하기
-  </Button>
-</Box>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#A0E7E5',
+            color: '#333',
+            fontWeight: 'bold',
+            borderRadius: '12px',
+            '&:hover': {
+              backgroundColor: '#90d9d6',
+            },
+          }}
+        >
+          팀 생성하기
+        </Button>
+      </Box>
 
-
+      {/* ✅ 팀 목록 */}
       <Box sx={{ flex: 1, py: 4, px: 5, bgcolor: '#fff', overflowY: 'auto' }}>
         <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
           나의 팀 목록
@@ -111,7 +112,7 @@ const TeamPage = () => {
                 borderRadius: '16px',
               }}
             >
-              {/* 1. 팀 이름 + 새일정 + 인원수 */}
+              {/* 팀 이름 + 새일정 */}
               <Box
                 sx={{
                   display: 'flex',
@@ -133,7 +134,7 @@ const TeamPage = () => {
                 </Typography>
               </Box>
 
-              {/* 2. 팀장 정보 */}
+              {/* 팀장 정보 */}
               <Box
                 sx={{
                   display: 'flex',
@@ -160,7 +161,7 @@ const TeamPage = () => {
                       variant="body2"
                       sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}
                     >
-                      팀장{' '}
+                      팀장
                     </Typography>
                     <Typography
                       variant="subtitle1"
@@ -179,7 +180,7 @@ const TeamPage = () => {
                 </Box>
               </Box>
 
-              {/* 3. 최근 일정 */}
+              {/* 최근 일정 2개 */}
               <Box sx={{ flex: 1, mb: 1 }}>
                 <Typography
                   variant="subtitle2"
@@ -209,10 +210,11 @@ const TeamPage = () => {
                 </List>
               </Box>
 
-              {/* 4. 팀스페이스 접속 버튼 */}
+              {/* 팀스페이스 접속 버튼 */}
               <Button
                 variant="contained"
                 fullWidth
+                onClick={() => navigate('/teamspace')}
                 sx={{
                   mt: 'auto',
                   backgroundColor: '#A0E7E5',

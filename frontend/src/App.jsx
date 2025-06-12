@@ -7,6 +7,7 @@ import TeamPage from './pages/TeamPage';
 import TeamspacePage from './pages/TeamspacePage';
 import FriendPage from './pages/FriendPage';
 import SchooltimePage from './pages/SchooltimePage';
+import TeamspacePage from './pages/TeamspacePage';
 
 import { UserProvider } from './context/UserContext';
 import { CalendarProvider } from './context/CalendarContext';
