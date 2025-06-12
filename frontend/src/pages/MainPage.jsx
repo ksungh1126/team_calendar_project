@@ -46,7 +46,8 @@ const MainPage = () => {
         color: event.color,
         allDay: event.isAllDay,
         description: event.description,
-        location: event.location
+        location: event.location,
+        teamId: event.teamId
       }));
       
       setEvents(formattedEvents);
@@ -390,6 +391,11 @@ const MainPage = () => {
               <Typography variant="body2" gutterBottom>
                 종일 일정: {selectedEvent?.allDay ? '예' : '아니오'}
               </Typography>
+              {selectedEvent?.extendedProps.teamId && (
+                <Typography variant="body2" gutterBottom>
+                  팀 일정
+                </Typography>
+              )}
             </Box>
           )}
         </DialogContent>

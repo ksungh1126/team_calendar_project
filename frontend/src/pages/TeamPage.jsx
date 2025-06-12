@@ -1,237 +1,351 @@
+import { useState, useEffect } from 'react';
 import {
   Box,
+  Button,
   Typography,
   Card,
-  Button,
+  CardContent,
+  CardActions,
+  Avatar,
   Chip,
   List,
   ListItem,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  ListItemSecondaryAction,
+  IconButton,
+  Autocomplete,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import CommonAppBar from '../components/CommonAppBar';
 import { useNavigate } from 'react-router-dom';
-
-const teams = [
-  {
-    id: 1,
-    name: 'A팀',
-    members: 8,
-    hasNewEvent: true,
-    leader: {
-      name: '홍길동',
-      email: 'hong@a.com',
-      avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    },
-    events: [
-      { id: 1, title: 'A팀 회의', date: '2024-06-12' },
-      { id: 2, title: 'A팀 워크샵', date: '2024-06-10' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'B팀',
-    members: 5,
-    hasNewEvent: false,
-    leader: {
-      name: '김철수',
-      email: 'kim@b.com',
-      avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-    },
-    events: [
-      { id: 1, title: 'B팀 킥오프', date: '2024-06-11' },
-      { id: 2, title: 'B팀 회의', date: '2024-06-09' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'C팀',
-    members: 7,
-    hasNewEvent: true,
-    leader: {
-      name: '이영희',
-      email: 'lee@c.com',
-      avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-    },
-    events: [
-      { id: 1, title: 'C팀 세미나', date: '2024-06-10' },
-    ],
-  },
-];
+import { api } from '../services/api';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 const TeamPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [teams, setTeams] = useState([]);
+  const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState(false);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [newTeam, setNewTeam] = useState({
+    name: '',
+    description: '',
+    color: '#3788d8'
+  });
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [invitedMembers, setInvitedMembers] = useState([]);
+
+  // 팀 목록 가져오기
+  const fetchTeams = async () => {
+    try {
+      const response = await api.get('/team');
+      setTeams(response.data.teams);
+    } catch (error) {
+      console.error('팀 목록 가져오기 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeams();
+  }, []);
+
+  // 팀 생성 다이얼로그 열기
+  const handleOpenCreateTeamDialog = () => {
+    setNewTeam({
+      name: '',
+      description: '',
+      color: '#3788d8'
+    });
+    setIsCreateTeamDialogOpen(true);
+  };
+
+  // 팀 생성 다이얼로그 닫기
+  const handleCloseCreateTeamDialog = () => {
+    setIsCreateTeamDialogOpen(false);
+  };
+
+  // 팀 생성
+  const handleCreateTeam = async () => {
+    try {
+      if (!newTeam.name) {
+        alert('팀 이름은 필수 입력 항목입니다.');
+        return;
+      }
+
+      const response = await api.post('/team', newTeam);
+      handleCloseCreateTeamDialog();
+      fetchTeams();
+      
+      // 팀 생성 후 바로 팀원 초대 다이얼로그 열기
+      setSelectedTeam(response.data.team);
+      setIsInviteDialogOpen(true);
+    } catch (error) {
+      console.error('팀 생성 실패:', error.response?.data || error.message);
+      alert(error.response?.data?.error || '팀 생성에 실패했습니다.');
+    }
+  };
+
+  // 팀원 초대 다이얼로그 열기
+  const handleOpenInviteDialog = (team) => {
+    setSelectedTeam(team);
+    setInviteEmail('');
+    setInvitedMembers([]);
+    setIsInviteDialogOpen(true);
+  };
+
+  // 팀원 초대 다이얼로그 닫기
+  const handleCloseInviteDialog = () => {
+    setIsInviteDialogOpen(false);
+    setSelectedTeam(null);
+    setInviteEmail('');
+    setInvitedMembers([]);
+  };
+
+  // 이메일 검색
+  const handleSearchEmail = async (searchTerm) => {
+    if (!searchTerm) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const response = await api.get(`/user/search?email=${searchTerm}`);
+      setSearchResults(response.data.users);
+    } catch (error) {
+      console.error('사용자 검색 실패:', error);
+    }
+  };
+
+  // 팀원 초대
+  const handleInviteMember = async () => {
+    if (!inviteEmail) {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+
+    try {
+      await api.post(`/team/${selectedTeam.id}/invite`, { email: inviteEmail });
+      setInvitedMembers([...invitedMembers, inviteEmail]);
+      setInviteEmail('');
+      alert('초대가 완료되었습니다.');
+    } catch (error) {
+      console.error('팀원 초대 실패:', error.response?.data || error.message);
+      alert(error.response?.data?.error || '팀원 초대에 실패했습니다.');
+    }
+  };
+
+  // 초대된 팀원 제거
+  const handleRemoveInvitedMember = (email) => {
+    setInvitedMembers(invitedMembers.filter(member => member !== email));
+  };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <CommonAppBar userName={user?.name || 'user'} pageName="팀페이지" />
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <CommonAppBar userName={user?.name || '사용자'} pageName="팀 페이지" />
+      <Box sx={{ flex: 1, p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4">내 팀</Typography>
+          <Button
+            variant="contained"
+            startIcon={<GroupAddIcon />}
+            onClick={handleOpenCreateTeamDialog}
+          >
+            팀 생성하기
+          </Button>
+        </Box>
 
-      {/* ✅ 팀 생성하기 버튼 */}
-      <Box sx={{ px: 5, pt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: '#A0E7E5',
-            color: '#333',
-            fontWeight: 'bold',
-            borderRadius: '12px',
-            '&:hover': {
-              backgroundColor: '#90d9d6',
-            },
-          }}
-        >
-          팀 생성하기
-        </Button>
-      </Box>
-
-      {/* ✅ 팀 목록 */}
-      <Box sx={{ flex: 1, py: 4, px: 5, bgcolor: '#fff', overflowY: 'auto' }}>
-        <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
-          나의 팀 목록
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '24px',
-          }}
-        >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
           {teams.map((team) => (
             <Card
               key={team.id}
               sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                p: 2,
-                boxSizing: 'border-box',
-                border: '2px solid black',
-                borderRadius: '16px',
+                width: 300,
+                backgroundColor: 'white',
+                borderRadius: 2,
+                boxShadow: 2,
               }}
             >
-              {/* 팀 이름 + 새일정 */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mb: 1,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    {team.name}
-                  </Typography>
-                  {team.hasNewEvent && (
-                    <Chip label="새 일정" color="primary" size="small" />
-                  )}
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      backgroundColor: team.color,
+                      mr: 2,
+                    }}
+                  />
+                  <Typography variant="h6">{team.name}</Typography>
                 </Box>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  인원 {team.members}명
-                </Typography>
-              </Box>
 
-              {/* 팀장 정보 */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  mb: 2,
-                  mt: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: '20%',
-                    aspectRatio: '7 / 9',
-                    mr: 2,
-                    borderRadius: 0,
-                    backgroundImage: `url(${team.leader.avatar})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    flexShrink: 0,
-                  }}
-                />
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}
-                    >
-                      팀장
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}
-                    >
-                      {team.leader.name}
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {team.description}
+                </Typography>
+
+                {team.leader && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                    <Avatar
+                      src={team.leader.avatar}
+                      alt={team.leader.name}
+                      sx={{ width: 32, height: 32, mr: 1 }}
+                    />
+                    <Typography variant="body2">
+                      팀장: {team.leader.name}
                     </Typography>
                   </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontSize: '1rem' }}
-                  >
-                    {team.leader.email}
+                )}
+
+                {team.members && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    팀원 {team.members.length}명
                   </Typography>
-                </Box>
-              </Box>
+                )}
 
-              {/* 최근 일정 2개 */}
-              <Box sx={{ flex: 1, mb: 1 }}>
-                <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 'bold', mb: 0.5 }}
+                {team.events && team.events.length > 0 && (
+                  <List dense sx={{ mt: 1 }}>
+                    {team.events.map((event) => (
+                      <ListItem key={event.id}>
+                        <ListItemText
+                          primary={event.title}
+                          secondary={event.date}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </CardContent>
+
+              <CardActions>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={() => navigate(`/team/${team.id}`)}
                 >
-                  최근 일정
-                </Typography>
-                <List dense disablePadding sx={{ mt: 0, mb: 0 }}>
-                  {team.events.slice(0, 2).map((event) => (
-                    <ListItem
-                      key={event.id}
-                      sx={{ pl: 0, py: 0.2, minHeight: '28px' }}
-                    >
-                      <ListItemText
-                        primary={event.title}
-                        secondary={event.date}
-                        primaryTypographyProps={{ fontSize: '0.98rem' }}
-                        secondaryTypographyProps={{ fontSize: '0.85rem' }}
-                      />
-                    </ListItem>
-                  ))}
-                  {team.events.length === 0 && (
-                    <ListItem sx={{ pl: 0, py: 0.2, minHeight: '28px' }}>
-                      <ListItemText primary="등록된 일정이 없습니다." />
-                    </ListItem>
-                  )}
-                </List>
-              </Box>
+                  팀스페이스 접속
+                </Button>
 
-              {/* 팀스페이스 접속 버튼 */}
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={() => navigate('/teamspace')}
-                sx={{
-                  mt: 'auto',
-                  backgroundColor: '#A0E7E5',
-                  color: '#333',
-                  fontWeight: 'bold',
-                  borderRadius: '12px',
-                  '&:hover': {
-                    backgroundColor: '#90d9d6',
-                  },
-                }}
-              >
-                팀스페이스 접속
-              </Button>
+                {/* 팀원 초대 버튼 */}
+                <Box sx={{ mt: 2, width: '100%' }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<PersonAddIcon />}
+                    onClick={() => handleOpenInviteDialog(team)}
+                    fullWidth
+                  >
+                    팀원 초대
+                  </Button>
+                </Box>
+              </CardActions>
             </Card>
           ))}
         </Box>
       </Box>
+
+      {/* 팀 생성 다이얼로그 */}
+      <Dialog open={isCreateTeamDialogOpen} onClose={handleCloseCreateTeamDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>새 팀 생성</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField
+              label="팀 이름"
+              value={newTeam.name}
+              onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
+              required
+              fullWidth
+            />
+            <TextField
+              label="팀 설명"
+              value={newTeam.description}
+              onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
+              multiline
+              rows={2}
+              fullWidth
+            />
+            <TextField
+              label="팀 색상"
+              type="color"
+              value={newTeam.color}
+              onChange={(e) => setNewTeam({ ...newTeam, color: e.target.value })}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCreateTeamDialog}>취소</Button>
+          <Button onClick={handleCreateTeam} variant="contained" color="primary">
+            생성
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 팀원 초대 다이얼로그 */}
+      <Dialog open={isInviteDialogOpen} onClose={handleCloseInviteDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>팀원 초대</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Autocomplete
+              freeSolo
+              options={searchResults.map(user => user.email)}
+              inputValue={inviteEmail}
+              onInputChange={(event, newValue) => {
+                setInviteEmail(newValue);
+                handleSearchEmail(newValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="이메일"
+                  fullWidth
+                />
+              )}
+            />
+            <Button
+              variant="contained"
+              onClick={handleInviteMember}
+              disabled={!inviteEmail}
+            >
+              초대하기
+            </Button>
+
+            {invitedMembers.length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  초대된 팀원
+                </Typography>
+                <List>
+                  {invitedMembers.map((email) => (
+                    <ListItem key={email}>
+                      <ListItemText primary={email} />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          onClick={() => handleRemoveInvitedMember(email)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseInviteDialog}>닫기</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
