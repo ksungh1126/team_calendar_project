@@ -17,8 +17,16 @@ console.log('3. 라우터 모듈 로드 완료');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// CORS 설정
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://team-calendar-frontend.onrender.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // 미들웨어 설정
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
