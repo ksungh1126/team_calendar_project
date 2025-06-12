@@ -9,6 +9,15 @@ const createEvent = async (req, res) => {
     const { title, description, startDate, endDate, location, color, isAllDay, isTeamEvent, teamId } = req.body;
     console.log('eventController.js: 요청 데이터:', req.body);
 
+    const parsedStartDate = startDate;
+    const parsedEndDate = endDate;
+
+    console.log('eventController.js: 원본 시작 날짜 문자열:', startDate);
+    console.log('eventController.js: 원본 종료 날짜 문자열:', endDate);
+
+    console.log('eventController.js: 파싱된 시작 날짜 (문자열 그대로):', parsedStartDate);
+    console.log('eventController.js: 파싱된 종료 날짜 (문자열 그대로):', parsedEndDate);
+
     // 팀 일정인 경우 팀 멤버인지 확인
     if (isTeamEvent && teamId) {
       const teamMember = await db.TeamMember.findOne({
@@ -23,8 +32,8 @@ const createEvent = async (req, res) => {
       userId: req.user.id,
       title,
       description,
-      startDate,
-      endDate,
+      startDate: parsedStartDate,
+      endDate: parsedEndDate,
       location,
       color,
       isAllDay,

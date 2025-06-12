@@ -63,7 +63,7 @@ const startServer = async () => {
     console.log('데이터베이스 동기화 완료');
 
     app.listen(port, () => {
-      console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
+      console.log(`✅서버가 http://localhost:${port} 에서 실행 중입니다.`);
     });
   } catch (error) {
     console.error('서버 시작 실패:', error);
