@@ -151,6 +151,25 @@ const TeamPage = () => {
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <CommonAppBar userName={user?.name || '사용자'} pageName="팀 페이지" />
+      <Box
+  sx={{
+    mt: 4,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }}
+>
+  <img
+    src="/team_image.jpg"
+    alt="Team"
+    style={{
+      width: '200px',
+      height: 'auto',
+      borderRadius: '12px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    }}
+  />
+</Box>
       <Box sx={{ flex: 1, p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4">내 팀</Typography>

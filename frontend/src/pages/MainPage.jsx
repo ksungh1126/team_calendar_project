@@ -180,6 +180,21 @@ const MainPage = () => {
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <CommonAppBar />
       <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        mt: 4
+      }}
+    >
+      <img
+        src="team_calendar_logo.jpg"
+        alt="Team Calendar Logo"
+        style={{ width: '180px', height: 'auto' }}
+      />
+    </Box>
+
+      <Box
         sx={{
           flex: 1,
           p: 3,
