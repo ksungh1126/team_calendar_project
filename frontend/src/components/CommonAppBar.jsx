@@ -15,8 +15,8 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('user'); // 로그인 정보 제거
-    navigate('/login'); // 로그인 페이지로 이동
-  };
+    window.location.href = 'http://localhost:4000/'; // 로그인 페이지로 이동 (브라우저 새로고침)
+};
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#22C0B8', color: '#fff' }}>
