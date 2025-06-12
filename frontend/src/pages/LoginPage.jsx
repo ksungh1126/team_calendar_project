@@ -55,6 +55,13 @@ const LoginPage = () => {
           mx: 'auto',
         }}
       >
+      <Box sx={{ mb: 2 }}>
+    <img
+      src="/team_calendar_logo.png"
+      alt="Team Calendar"
+      style={{ width: '200px', objectFit: 'contain' }}
+    />
+  </Box>
         <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
           로그인
         </Typography>
