@@ -13,8 +13,8 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/login');
+    localStorage.removeItem('user'); // 로그인 정보 제거
+    window.location.href = '/'; 
 };
   return (
     <AppBar position="static" sx={{ backgroundColor: '#22C0B8', color: '#fff' }}>
