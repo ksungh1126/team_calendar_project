@@ -25,10 +25,19 @@ function App() {
             }}
           >
             <Routes>
-              <Route path="/" element={<Navigate to="/main" replace />} />
-              <Route path="/main" element={<MainPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Protected Routes */}
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <MainPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/main" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
               <Route
                 path="/team"
                 element={
