@@ -2,8 +2,7 @@ import { AppBar, Toolbar, Typography, Box, IconButton } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import SchoolIcon from '@mui/icons-material/School';
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from '@mui/icons-material/Logout'; // ✅ SchoolIcon 제거됨
 import { Link, useNavigate } from 'react-router-dom';
 
 const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
@@ -17,7 +16,6 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
     localStorage.removeItem('user');
     navigate('/login');
 };
-
   return (
     <AppBar position="static" sx={{ backgroundColor: '#22C0B8', color: '#fff' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -26,7 +24,7 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
           {userName} 님의 {pageName} 입니다
         </Typography>
 
-        {/* 우측: 다섯 개의 버튼 (알림 제거, 설정 → 로그아웃으로 변경) */}
+        {/* 우측: 버튼들 */}
         <Box sx={{ display: 'flex', gap: 2 }}>
           <IconButton color="inherit" component={Link} to="/main" onClick={() => handleNavigationClick('메인')}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -49,14 +47,8 @@ const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
             </Box>
           </IconButton>
 
-          <IconButton color="inherit" component={Link} to="/schooltime" onClick={() => handleNavigationClick('시간표')}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <SchoolIcon />
-              <Typography variant="caption" sx={{ color: '#fff' }}>시간표</Typography>
-            </Box>
-          </IconButton>
+          {/* ✅ 시간표 버튼 제거됨 */}
 
-          {/* 로그아웃 버튼 */}
           <IconButton color="inherit" onClick={handleLogout}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <LogoutIcon />

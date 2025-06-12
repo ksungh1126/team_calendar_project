@@ -14,8 +14,6 @@ import MainPage from "./pages/MainPage";
 import TeamPage from "./pages/TeamPage";
 import TeamspacePage from "./pages/TeamspacePage";
 import FriendPage from "./pages/FriendPage";
-import SchooltimePage from "./pages/SchooltimePage";
-import TeamspacePage from './pages/TeamspacePage';
 
 import { AuthProvider } from "./context/AuthContext";
 import { EventProvider } from "./context/EventContext";
@@ -34,19 +32,22 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-    <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-      <AuthProvider>
-        <TeamProvider>
-          <EventProvider>
+          <AuthProvider>
+            <TeamProvider>
+              <EventProvider>
                 <BrowserRouter>
-                <Routes>
+                  <Routes>
                     <Route path="/" element={<LoginPage />} />
-                    <Route path="/main" element={
-                      <ProtectedRoute>
-                        <MainPage />
-                      </ProtectedRoute>
-                    } />
+                    <Route
+                      path="/main"
+                      element={
+                        <ProtectedRoute>
+                          <MainPage />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route
                       path="/team"
@@ -72,25 +73,17 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                  <Route
-                      path="/schooltime"
-                    element={
-                        <ProtectedRoute>
-                          <SchooltimePage />
-                        </ProtectedRoute>
-                    }
-                    />
-                </Routes>
+                    {/* 🔥 SchooltimePage 관련 경로 및 import 제거됨 */}
+                  </Routes>
                 </BrowserRouter>
-          </EventProvider>
-        </TeamProvider>
-      </AuthProvider>
+              </EventProvider>
+            </TeamProvider>
+          </AuthProvider>
         </LocalizationProvider>
-    </ThemeProvider>
+      </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
 
 export default App;
- 
