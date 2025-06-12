@@ -4,32 +4,33 @@ import { useMutation } from '@tanstack/react-query';
 import { authService } from '../services/authService';
 import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
   
-  const loginMutation = useMutation({
-    mutationFn: authService.login,
+  const registerMutation = useMutation({
+    mutationFn: authService.register,
     onSuccess: () => {
-      console.log('로그인 성공!');
-      navigate('/main');
+      console.log('회원가입 성공!');
+      navigate('/');
     },
-    onError: (error) => {
-      const errorMessage = error.response?.data?.message || '로그인에 실패했습니다.';
-      console.error('로그인 실패:', errorMessage);
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || '회원가입에 실패했습니다.';
+      console.error('회원가입 실패:', errorMessage);
       setError(errorMessage);
     },
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     
     const formData = new FormData(e.currentTarget);
-    const email = formData.get('email');
-    const password = formData.get('password');
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
 
-    loginMutation.mutate({ email, password });
+    registerMutation.mutate({ email, password, name });
   };
 
   return (
@@ -56,7 +57,7 @@ const LoginPage = () => {
         }}
       >
         <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-          로그인
+          회원가입
         </Typography>
         
         {error && (
@@ -68,36 +69,45 @@ const LoginPage = () => {
         <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
           <TextField
             margin="normal"
-          required
+            required
+            fullWidth
+            id="name"
+            label="이름"
+            name="name"
+            autoComplete="name"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
             fullWidth
             id="email"
             label="이메일"
             name="email"
             autoComplete="email"
-            autoFocus
-        />
+          />
           <TextField
             margin="normal"
             required
             fullWidth
             name="password"
             label="비밀번호"
-          type="password"
+            type="password"
             id="password"
-            autoComplete="current-password"
-        />
+            autoComplete="new-password"
+          />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={loginMutation.isPending}
+            disabled={registerMutation.isPending}
           >
-            {loginMutation.isPending ? '로그인 중...' : '로그인'}
+            {registerMutation.isPending ? '회원가입 중...' : '회원가입'}
           </Button>
           <Box sx={{ textAlign: 'center' }}>
-            <Link to="/register" style={{ textDecoration: 'none', color: '#1976d2' }}>
-              계정이 없으신가요? 회원가입
+            <Link to="/" style={{ textDecoration: 'none', color: '#1976d2' }}>
+              이미 계정이 있으신가요? 로그인
             </Link>
           </Box>
         </Box>
@@ -106,4 +116,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage; 

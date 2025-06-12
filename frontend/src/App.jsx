@@ -1,43 +1,72 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import MainLayout from './layouts/MainLayout';
-import CalendarPage from './pages/CalendarPage';
+import TeamPage from './pages/TeamPage';
+import TeamspacePage from './pages/TeamspacePage';
+import FriendPage from './pages/FriendPage';
+import SchooltimePage from './pages/SchooltimePage';
 
-// 보호된 라우트 컴포넌트
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
+import { UserProvider } from './context/UserContext';
+import { CalendarProvider } from './context/CalendarContext';
+import { FriendProvider } from './context/FriendContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <Router>
-      <CssBaseline />
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/calendar" replace />} />
-          <Route path="calendar" element={<CalendarPage />} />
-          <Route path="teams" element={<div>팀 관리 페이지</div>} />
-          <Route path="subjects" element={<div>과목 관리 페이지</div>} />
-          <Route path="profile" element={<div>프로필 페이지</div>} />
-        </Route>
-      </Routes>
-    </Router>
+    <UserProvider>
+      <CalendarProvider>
+        <FriendProvider>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<Navigate to="/main" replace />} />
+              <Route path="/main" element={<MainPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route
+                path="/team"
+                element={
+                  <ProtectedRoute>
+                    <TeamPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/teamspace"
+                element={
+                  <ProtectedRoute>
+                    <TeamspacePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/friends"
+                element={
+                  <ProtectedRoute>
+                    <FriendPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/schooltime"
+                element={
+                  <ProtectedRoute>
+                    <SchooltimePage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </FriendProvider>
+      </CalendarProvider>
+    </UserProvider>
   );
 }
 
-export default App;
+export default App; 
