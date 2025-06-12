@@ -39,9 +39,16 @@ function App() {
               <EventProvider>
                 <BrowserRouter>
                   <Routes>
-                    <Route path="/" element={<LoginPage />} />
                     <Route path="/login" element={<LoginPage />} />
-  
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route
+                      path="/"
+                      element={
+                        <ProtectedRoute>
+                          <MainPage />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route
                       path="/main"
                       element={
@@ -50,7 +57,6 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    <Route path="/register" element={<RegisterPage />} />
                     <Route
                       path="/team"
                       element={

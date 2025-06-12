@@ -4,18 +4,21 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LogoutIcon from '@mui/icons-material/Logout'; // ✅ SchoolIcon 제거됨
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CommonAppBar = ({ userName = 'user', pageName = '' }) => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleNavigationClick = (targetPage) => {
     console.log(`${targetPage} 페이지로 이동합니다.`);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // 로그인 정보 제거
+    logout();
     navigate('/login', { replace: true });
-};
+  };
+
   return (
     <AppBar position="static" sx={{ backgroundColor: '#22C0B8', color: '#fff' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>

@@ -3,13 +3,19 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { authService } from '../services/authService';
 import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState('');
   
   const loginMutation = useMutation({
-    mutationFn: authService.login,
+    mutationFn: async (credentials) => {
+      const response = await authService.login(credentials);
+      await login(credentials.email, credentials.password);
+      return response;
+    },
     onSuccess: () => {
       console.log('로그인 성공!');
       navigate('/main');
