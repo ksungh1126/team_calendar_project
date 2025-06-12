@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom'; // ⬅️ useLocation 추가
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
@@ -8,19 +8,14 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
-  const location = useLocation(); // ⬅️ useLocation 사용
-
-  // ✅ 1️⃣ 여기 추가: 로그인/회원가입 페이지는 Protected 적용 X
-  if (location.pathname === '/login' || location.pathname === '/register') {
-    return <>{children}</>;
-  }
+  const location = useLocation();
 
   if (isLoading) {
-    return <div>로딩 중...</div>; // Or a loading spinner component
+    return <div>로딩 중...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

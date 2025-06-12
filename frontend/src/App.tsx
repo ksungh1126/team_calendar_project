@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from '@mui/material/styles';
@@ -39,7 +39,8 @@ function App() {
                   <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+                    <Route path="/" element={<Navigate to="/main" replace />} />
+                    <Route path="/main" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
                     <Route path="/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
                     <Route path="/teamspace/:teamId" element={<ProtectedRoute><TeamspacePage /></ProtectedRoute>} />
                     <Route path="/friend" element={<ProtectedRoute><FriendPage /></ProtectedRoute>} />
