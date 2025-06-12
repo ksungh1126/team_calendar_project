@@ -93,15 +93,15 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const user = req.user;
+
+    // ✅ 사용자 정보 객체만 바로 반환 (user: { ... } 감싸지 않음)
     res.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        studentId: user.studentId,
-        major: user.major,
-        grade: user.grade
-      }
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      studentId: user.studentId,
+      major: user.major,
+      grade: user.grade
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
