@@ -14,10 +14,16 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5432,
     logging: dbConfig.logging,
     dialectOptions: {
-      ssl: process.env.NODE_ENV === 'production' ? {
+      ssl: {
         require: true,
         rejectUnauthorized: false
-      } : false
+      }
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
     }
   }
 );
