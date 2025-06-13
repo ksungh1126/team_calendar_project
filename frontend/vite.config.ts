@@ -11,9 +11,44 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        manualChunks: {
+          'vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            '@mui/material',
+            '@mui/icons-material',
+            '@emotion/react',
+            '@emotion/styled',
+            '@fullcalendar/react',
+            '@fullcalendar/core',
+            '@fullcalendar/daygrid',
+            '@fullcalendar/timegrid',
+            '@fullcalendar/interaction',
+            'date-fns',
+            '@tanstack/react-query'
+          ]
+        }
       }
     }
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@mui/material',
+      '@mui/icons-material',
+      '@emotion/react',
+      '@emotion/styled',
+      '@fullcalendar/react',
+      '@fullcalendar/core',
+      '@fullcalendar/daygrid',
+      '@fullcalendar/timegrid',
+      '@fullcalendar/interaction',
+      'date-fns',
+      '@tanstack/react-query'
+    ]
   },
   server: {
     port: 5173,
