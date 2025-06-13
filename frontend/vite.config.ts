@@ -4,22 +4,27 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'mui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          'calendar-vendor': ['@fullcalendar/react', '@fullcalendar/core', '@fullcalendar/daygrid', '@fullcalendar/timegrid', '@fullcalendar/interaction'],
-          'date-vendor': ['date-fns', '@mui/x-date-pickers'],
-          'query-vendor': ['@tanstack/react-query', '@tanstack/react-query-devtools']
+          'react-core': ['react', 'react-dom'],
+          'react-router': ['react-router-dom'],
+          'mui': ['@mui/material', '@mui/icons-material'],
+          'calendar': ['@fullcalendar/react', '@fullcalendar/core', '@fullcalendar/daygrid', '@fullcalendar/timegrid', '@fullcalendar/interaction'],
+          'utils': ['date-fns', '@tanstack/react-query']
         }
       }
-    },
-    chunkSizeWarningLimit: 1000
+    }
   },
   server: {
     port: 5173,
