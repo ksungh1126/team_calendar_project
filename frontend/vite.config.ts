@@ -8,21 +8,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-      },
-    },
+    minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-core': ['react', 'react-dom'],
-          'react-router': ['react-router-dom'],
-          'mui': ['@mui/material', '@mui/icons-material'],
-          'calendar': ['@fullcalendar/react', '@fullcalendar/core', '@fullcalendar/daygrid', '@fullcalendar/timegrid', '@fullcalendar/interaction'],
-          'utils': ['date-fns', '@tanstack/react-query']
-        }
+        manualChunks: undefined
       }
     }
   },
